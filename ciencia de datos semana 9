@@ -5,7 +5,7 @@
     "colab": {
       "provenance": [],
       "mount_file_id": "1HTDj_W2o9prHyTpaMnPeL-Rz-BF0u-Um",
-      "authorship_tag": "ABX9TyOebliwDt5r3NRWjr+stWgr",
+      "authorship_tag": "ABX9TyOV09yIvSvN/YxWFlV9GdQv",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -246,6 +246,56 @@
           "name": "stdout",
           "text": [
             "Exportación exitosa: Datos estructurados listos para gestión.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "\n",
+        "def procesar_datos_y_exportar(archivo_entrada):\n",
+        "    \"\"\"\n",
+        "    Pipeline de procesamiento integrado.\n",
+        "    Entrada: Ruta del CSV bruto.\n",
+        "    Salida: Dataframe limpio y exportación a formatos estándar.\n",
+        "    \"\"\"\n",
+        "    # Carga de datos\n",
+        "    df = pd.read_csv(archivo_entrada)\n",
+        "\n",
+        "    # Convert 'tiempo_viaje_min' to numeric, handling potential string issues (like commas)\n",
+        "    df['tiempo_viaje_min'] = df['tiempo_viaje_min'].astype(str).str.replace(',', '.', regex=False).astype(float)\n",
+        "\n",
+        "    # Limpieza: Eliminación de nulos críticos y estandarización\n",
+        "    # Se utiliza una técnica de imputación por mediana para no sesgar la varianza\n",
+        "    df['tiempo_viaje_min'] = df.groupby(['ruta'])['tiempo_viaje_min'].transform(lambda x: x.fillna(x.median()))\n",
+        "\n",
+        "    # Persistencia: Exportación para interoperabilidad\n",
+        "    df.to_csv(\"datos_limpios.csv\", index=False)\n",
+        "    df.to_excel(\"datos_limpios.xlsx\", index=False)\n",
+        "\n",
+        "    return df\n",
+        "\n",
+        "# Ejecución del flujo principal\n",
+        "if __name__ == \"__main__\":\n",
+        "    datos_estructurados = procesar_datos_y_exportar(\"/content/moviciudad_operaciones_bruto_SET_A (1).csv\")\n",
+        "    print(\"Flujo de trabajo ejecutado con éxito.\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "NXMBbfuAmmBz",
+        "outputId": "aff30156-aa67-4d0b-8763-d787fdac77af"
+      },
+      "execution_count": 45,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Flujo de trabajo ejecutado con éxito.\n"
           ]
         }
       ]
